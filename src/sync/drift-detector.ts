@@ -7,9 +7,9 @@ import type {
   DriftReport,
   DriftEntry,
   Difference,
+  TokenDrift,
   ComponentMap
 } from './types'
-import { colorsMatch } from './color-utils'
 import { tailwindToPx } from './value-mapping'
 import { extractSnapshot } from './snapshot-extractor'
 import type { IFigmaMCPAdapter } from './adapters/figma-mcp'

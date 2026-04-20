@@ -9,5 +9,7 @@
   "then": {
     "type": "askAgent",
     "prompt": "Run a full drift scan across all components by:\n1. Import runDriftDetection() from src/sync/engine.ts\n2. Create a FigmaMCPAdapter using createFigmaMCPAdapter() from src/sync/adapters/figma-mcp.ts\n3. Call runDriftDetection(adapter) to get the full drift report\n4. Format and present the drift report using formatDriftReport() from src/sync/drift-detector.ts\n5. Summarize: total components, in-sync count, drifted count, unlinked count\n6. For drifted components, list each difference with type and description\n7. Offer to sync specific components or all drifted components"
-  }
+  },
+  "workspaceFolderName": "design-system-poc",
+  "shortName": "full-drift-scan"
 }
