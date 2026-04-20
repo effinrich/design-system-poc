@@ -358,7 +358,7 @@ function collectClassStrings(sourceFile: SourceFile): string[] {
   for (const template of sourceFile.getDescendantsOfKind(
     SyntaxKind.NoSubstitutionTemplateLiteral
   )) {
-    strings.push(template.getLiteralValue())
+    strings.push(template.getLiteralText())
   }
 
   for (const template of sourceFile.getDescendantsOfKind(
@@ -366,9 +366,9 @@ function collectClassStrings(sourceFile: SourceFile): string[] {
   )) {
     // Collect the head and each span's literal text
     const head = template.getHead()
-    strings.push(head.getLiteralValue())
+    strings.push(head.getLiteralText())
     for (const span of template.getTemplateSpans()) {
-      strings.push(span.getLiteral().getLiteralValue())
+      strings.push(span.getLiteral().getLiteralText())
     }
   }
 

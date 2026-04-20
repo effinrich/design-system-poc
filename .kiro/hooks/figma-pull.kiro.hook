@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Figma Pull",
+  "description": "Pull Figma design changes into React component code. Runs figma-to-code sync for a specified component or all components with detected drift.",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run figma-to-code sync by:\n1. Import runFigmaToCodeSync() and runDriftDetection() from src/sync/engine.ts\n2. Create a FigmaMCPAdapter using createFigmaMCPAdapter() from src/sync/adapters/figma-mcp.ts\n3. First run drift detection to identify drifted components\n4. Ask the user which component(s) to pull from Figma, or offer to pull all drifted components\n5. For each selected component, call runFigmaToCodeSync(adapter, componentName)\n6. Present the sync results showing changes applied\n7. After sync, generate/update stories using runStoryGeneration() from src/sync/engine.ts"
+  }
+}

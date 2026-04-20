@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "name": "Post-Sync Story Generation",
+  "description": "After a sync task completes, automatically generate or update Storybook stories for the affected components to keep documentation current.",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "After a sync task completes, generate stories for affected components:\n1. Import runStoryGeneration() from src/sync/engine.ts\n2. Import loadComponentMap() from src/sync/component-map.ts\n3. Load the component map and check lastSyncedAt timestamps\n4. For components that were recently synced (within the last few minutes), run story generation\n5. Call runStoryGeneration(componentName) for each affected component\n6. Report which stories were generated or updated"
+  },
+  "workspaceFolderName": "design-system-poc",
+  "shortName": "post-sync-stories"
+}

@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Component Drift Check",
+  "description": "When a component file in src/components/ui/ or src/components/dashboard/ is edited, extract a fresh manifest, run drift detection against Figma, and present the drift report. Offer to sync code-to-figma if drift is detected.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "src/components/ui/*.tsx",
+      "src/components/dashboard/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A component file was edited. Run drift detection for this component by:\n1. Import and call extractManifest() from src/sync/manifest-extractor.ts on the edited file\n2. Load the component map from .kiro/sync/component-map.json to find the Figma node ID\n3. If a Figma node ID exists, extract a snapshot and compare using the drift detector\n4. Present the drift report to the user\n5. If drift is detected, offer to run code-to-figma sync using the engine's runCodeToFigmaSync()\n6. After sync, generate/update stories using runStoryGeneration()"
+  }
+}

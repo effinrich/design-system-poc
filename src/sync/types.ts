@@ -162,3 +162,87 @@ export type SyncResult = {
   /** Error details if the sync failed */
   errors: string[]
 }
+
+// --- Figma MCP Adapter Types ---
+
+/** Raw design context returned by get_design_context MCP tool */
+export type FigmaDesignContext = {
+  /** The Figma node ID that was queried */
+  nodeId: string
+  /** Raw design context content from the MCP tool */
+  content: string
+  /** Whether the response was truncated due to the 20KB limit */
+  truncated: boolean
+}
+
+/** Metadata returned by get_metadata MCP tool */
+export type FigmaMetadata = {
+  /** The Figma node ID that was queried */
+  nodeId: string
+  /** Raw metadata content from the MCP tool */
+  content: string
+  /** Node map for sub-node navigation when design context is truncated */
+  nodeMap: Record<string, string>
+}
+
+/** Variable definitions returned by get_variable_defs MCP tool */
+export type FigmaVariableCollection = {
+  /** Raw variable definitions content from the MCP tool */
+  content: string
+  /** Parsed variable collections, keyed by collection name */
+  collections: Record<string, FigmaVariableGroup>
+}
+
+/** A group of variables within a collection */
+export type FigmaVariableGroup = {
+  /** Collection name */
+  name: string
+  /** Mode names (e.g., "Light", "Dark") */
+  modes: string[]
+  /** Variables in this collection */
+  variables: FigmaVariable[]
+}
+
+/** A single Figma variable definition */
+export type FigmaVariable = {
+  /** Variable name (e.g., "primary", "background") */
+  name: string
+  /** Values per mode, keyed by mode name */
+  valuesByMode: Record<string, string>
+}
+
+/** Search result from search_design_system MCP tool */
+export type FigmaSearchResult = {
+  /** Node ID of the matching component */
+  nodeId: string
+  /** Component name in Figma */
+  name: string
+  /** Page name where the component lives */
+  pageName: string
+  /** Description of the component */
+  description: string
+}
+
+/** Result from use_figma MCP tool */
+export type UseFigmaResult = {
+  /** Whether the script executed successfully */
+  success: boolean
+  /** Raw output from the use_figma call */
+  output: string
+  /** Error message if the script failed */
+  error?: string
+}
+
+/** Options for configuring the Figma MCP adapter */
+export type FigmaMCPAdapterOptions = {
+  /** Figma file key */
+  fileKey: string
+  /** Connection timeout in milliseconds (default: 10000) */
+  connectionTimeoutMs?: number
+  /** Maximum number of retries for transient failures (default: 2) */
+  maxRetries?: number
+  /** Delay between retries in milliseconds (default: 1000) */
+  retryDelayMs?: number
+  /** Output size limit in bytes for truncation detection (default: 20480) */
+  outputLimitBytes?: number
+}

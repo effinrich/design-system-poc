@@ -51,8 +51,8 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Test extraction against `src/components/dashboard/StatCard.tsx` (no cva, props-only)
     - _Requirements: 2.1, 2.2, 2.3_
 
-- [-] 3. Implement color normalization and value mapping
-  - [-] 3.1 Implement color normalization pipeline
+- [x] 3. Implement color normalization and value mapping
+  - [x] 3.1 Implement color normalization pipeline
     - Create `src/sync/color-utils.ts` with functions: `parseOKLCH(oklchString) → hex`, `figmaRGBToHex({r, g, b}) → hex`, `colorsMatch(hex1, hex2, tolerance?) → boolean`
     - Use `culori` for OKLCH parsing and sRGB conversion
     - Normalize Figma RGB floats (0-1) to 0-255 integers then to 6-digit hex
@@ -64,7 +64,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Create `src/sync/__tests__/color-normalization.test.ts`
     - Generate OKLCH strings and their mathematically equivalent RGB, verify hex output matches within ±1 per channel
 
-  - [ ] 3.3 Implement Tailwind-to-Figma value mapping utilities
+  - [x] 3.3 Implement Tailwind-to-Figma value mapping utilities
     - Create `src/sync/value-mapping.ts` with functions: `tailwindToPx(className) → number`, `pxToTailwind(value, type) → string`, using `SPACING_MAP` and `RADIUS_MAP` from constants
     - _Requirements: 6.3, 6.4_
 
@@ -74,18 +74,18 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Create `src/sync/__tests__/value-mapping.test.ts`
     - For every key in SPACING_MAP and RADIUS_MAP, verify class → px → class round-trip
 
-- [ ] 4. Checkpoint — Ensure all tests pass
+- [x] 4. Checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Implement Figma Snapshot Extractor and MCP Adapter
-  - [ ] 5.1 Implement the Figma MCP Adapter
+- [-] 5. Implement Figma Snapshot Extractor and MCP Adapter
+  - [x] 5.1 Implement the Figma MCP Adapter
     - Create `src/sync/adapters/figma-mcp.ts` implementing the `FigmaMCPAdapter` interface
     - Wrap each MCP tool call (`get_design_context`, `get_metadata`, `get_screenshot`, `get_variable_defs`, `search_design_system`, `use_figma`) with error handling and 10-second timeout detection
     - Implement retry logic for transient failures
     - Handle 20KB output limit: detect truncation and fall back to `get_metadata` + sub-node re-fetch
     - _Requirements: 3.2, 12.1, 12.3_
 
-  - [ ] 5.2 Implement the Snapshot Extractor module
+  - [-] 5.2 Implement the Snapshot Extractor module
     - Create `src/sync/snapshot-extractor.ts` implementing the `SnapshotExtractor` interface
     - Parse `get_design_context` response to extract variant properties, color bindings (token name or hex), auto-layout spacing, corner radius, and layer structure
     - Call `get_variable_defs` for token name resolution when colors are variable-bound
