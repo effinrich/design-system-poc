@@ -172,3 +172,66 @@ export const AllSizes: Story = {
     await expect(buttons).toHaveLength(4)
   }
 }
+
+export const Xs: Story = {
+  args: { size: 'xs', children: 'Xs' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const element = canvas.getByRole('button', { name: 'Xs' })
+    await expect(element).toBeVisible()
+  }
+}
+
+export const Sm: Story = {
+  args: { size: 'sm', children: 'Sm' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const element = canvas.getByRole('button', { name: 'Sm' })
+    await expect(element).toBeVisible()
+  }
+}
+
+export const Lg: Story = {
+  args: { size: 'lg', children: 'Lg' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const element = canvas.getByRole('button', { name: 'Lg' })
+    await expect(element).toBeVisible()
+  }
+}
+
+export const Icon: Story = {
+  args: { size: 'icon', children: 'Icon' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const element = canvas.getByRole('button', { name: 'Icon' })
+    await expect(element).toBeVisible()
+  }
+}
+
+export const IconXs: Story = {
+  args: { size: 'icon-xs', children: 'Icon-xs' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const element = canvas.getByRole('button', { name: 'Icon-xs' })
+    await expect(element).toBeVisible()
+  }
+}
+
+export const IconSm: Story = {
+  args: { size: 'icon-sm', children: 'Icon-sm' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const element = canvas.getByRole('button', { name: 'Icon-sm' })
+    await expect(element).toBeVisible()
+  }
+}
+
+export const IconLg: Story = {
+  args: { size: 'icon-lg', children: 'Icon-lg' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const element = canvas.getByRole('button', { name: 'Icon-lg' })
+    await expect(element).toBeVisible()
+  }
+}
