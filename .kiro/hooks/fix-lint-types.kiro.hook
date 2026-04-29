@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Fix Lint & Types",
+  "description": "Checks for linting and TypeScript errors after component files are edited, and offers to auto-fix them.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check the edited file for TypeScript and linting errors. If errors are found, fix them automatically. Only fix clear lint/type issues — do not refactor logic. Stage only the files you changed."
+  }
+}

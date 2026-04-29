@@ -16,6 +16,7 @@
     "@base-ui/react": "^1.4.0",
     "@effinrich/figma-drift": "^0.1.0",
     "@fontsource-variable/geist": "^5.2.8",
+    "@forgekitdev/figma-drift": "^0.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "culori": "^4.0.2",
