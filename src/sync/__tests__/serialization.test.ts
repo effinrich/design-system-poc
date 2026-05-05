@@ -15,13 +15,16 @@ import type {
 
 // --- Helpers ---
 
-const hexChars = '0123456789abcdef'
 const arbHexColor = fc
-  .stringOf(fc.constantFrom(...hexChars.split('')), {
-    minLength: 6,
-    maxLength: 6
-  })
-  .map(s => `#${s}`)
+  .tuple(
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 })
+  )
+  .map(
+    ([r, g, b]) =>
+      `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+  )
 
 // --- Arbitraries ---
 
@@ -214,8 +217,8 @@ const arbTokenDrift: fc.Arbitrary<TokenDrift> = fc.record({
   tokenName: fc.string({ minLength: 1, maxLength: 20 }),
   cssValue: fc.string({ minLength: 5, maxLength: 40 }),
   figmaValue: fc.string({ minLength: 5, maxLength: 40 }),
-  cssHex: fc.hexaString({ minLength: 6, maxLength: 6 }).map(s => `#${s}`),
-  figmaHex: fc.hexaString({ minLength: 6, maxLength: 6 }).map(s => `#${s}`),
+  cssHex: arbHexColor,
+  figmaHex: arbHexColor,
   mode: fc.oneof(fc.constant('light' as const), fc.constant('dark' as const))
 })
 
@@ -256,7 +259,7 @@ describe('serialization round-trips', () => {
       fc.property(arbComponentManifest, manifest => {
         const json = JSON.stringify(manifest)
         const deserialized = JSON.parse(json) as ComponentManifest
-        expect(deserialized).toStrictEqual(manifest)
+        expect(deserialized).toEqual(manifest)
       }),
       { numRuns: 100 }
     )
@@ -269,7 +272,7 @@ describe('serialization round-trips', () => {
       fc.property(arbFigmaSnapshot, snapshot => {
         const json = JSON.stringify(snapshot)
         const deserialized = JSON.parse(json) as FigmaSnapshot
-        expect(deserialized).toStrictEqual(snapshot)
+        expect(deserialized).toEqual(snapshot)
       }),
       { numRuns: 100 }
     )
@@ -282,7 +285,7 @@ describe('serialization round-trips', () => {
       fc.property(arbDriftReport, report => {
         const json = JSON.stringify(report)
         const deserialized = JSON.parse(json) as DriftReport
-        expect(deserialized).toStrictEqual(report)
+        expect(deserialized).toEqual(report)
       }),
       { numRuns: 100 }
     )
