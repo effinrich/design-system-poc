@@ -19,7 +19,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Create `src/sync/constants.ts` with `SPACING_MAP`, `RADIUS_MAP`, and `TOKEN_PATTERN` regex
     - _Requirements: 1.3, 2.1, 3.1, 4.2_
 
-  - [ ]* 1.3 Write property tests for data model serialization round-trips
+  - [-] 1.3 Write property tests for data model serialization round-trips
     - **Property 1: ComponentManifest serialization round-trip**
     - **Validates: Requirements 2.5, 2.6, 2.7**
     - **Property 2: FigmaSnapshot serialization round-trip**
@@ -39,16 +39,17 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Detect sub-components exported from the same file
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-  - [ ]* 2.2 Write property test for Manifest Extractor
+  - [~] 2.2 Write property test for Manifest Extractor
     - **Property 4: Manifest extraction captures all component metadata**
     - **Validates: Requirements 2.1, 2.2, 2.3**
     - Create `src/sync/__tests__/manifest-extractor.test.ts`
     - Generate synthetic React component source strings with `cva()` calls and verify extraction completeness
 
-  - [ ]* 2.3 Write unit tests for Manifest Extractor with real components
+  - [x] 2.3 Write unit tests for Manifest Extractor with real components
     - Test extraction against `src/components/ui/button.tsx` (6 variants, 8 sizes)
     - Test extraction against `src/components/ui/badge.tsx` (6 variants, no size)
     - Test extraction against `src/components/dashboard/StatCard.tsx` (no cva, props-only)
+    - Tests exist in `src/sync/__tests__/manifest-extractor.test.ts` (all passing)
     - _Requirements: 2.1, 2.2, 2.3_
 
 - [x] 3. Implement color normalization and value mapping
@@ -58,7 +59,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Normalize Figma RGB floats (0-1) to 0-255 integers then to 6-digit hex
     - _Requirements: 3.3, 6.3_
 
-  - [ ]* 3.2 Write property test for color normalization
+  - [~] 3.2 Write property test for color normalization
     - **Property 5: Color normalization consistency**
     - **Validates: Requirements 3.3**
     - Create `src/sync/__tests__/color-normalization.test.ts`
@@ -68,7 +69,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Create `src/sync/value-mapping.ts` with functions: `tailwindToPx(className) → number`, `pxToTailwind(value, type) → string`, using `SPACING_MAP` and `RADIUS_MAP` from constants
     - _Requirements: 6.3, 6.4_
 
-  - [ ]* 3.4 Write property test for value mapping round-trip
+  - [~] 3.4 Write property test for value mapping round-trip
     - **Property 9: Figma-to-Tailwind value mapping round-trip**
     - **Validates: Requirements 6.3, 6.4**
     - Create `src/sync/__tests__/value-mapping.test.ts`
@@ -91,7 +92,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Call `get_variable_defs` for token name resolution when colors are variable-bound
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ]* 5.3 Write unit tests for Snapshot Extractor with mock MCP responses
+  - [~] 5.3 Write unit tests for Snapshot Extractor with mock MCP responses
     - Create `src/sync/__tests__/snapshot-extractor.test.ts` with pre-recorded MCP responses
     - Test extraction of variant properties, color bindings, spacing, and radius
     - Test 20KB fallback path with truncated response mock
@@ -108,7 +109,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Produce summary counts: totalComponents, inSync, drifted, unlinked, totalDifferences
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-  - [ ]* 6.2 Write property tests for Drift Detector
+  - [~] 6.2 Write property tests for Drift Detector
     - **Property 6: Drift detection completeness**
     - **Validates: Requirements 4.1, 4.4**
     - **Property 7: Drift differences are well-formed**
@@ -118,7 +119,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Create `src/sync/__tests__/drift-detector.test.ts`
     - Generate random manifest/snapshot pairs and verify completeness, well-formedness, and idempotence
 
-  - [ ]* 6.3 Write unit tests for Drift Detector edge cases
+  - [~] 6.3 Write unit tests for Drift Detector edge cases
     - Test identical manifest and snapshot → "in-sync" with empty differences
     - Test null figmaNodeId → "unlinked" status
     - Test hardcoded hex color with no matching token → flagged difference
@@ -134,7 +135,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Implement `syncTokenToFigma` (generate `use_figma` script to update variable) and `syncTokenToCSS` (modify CSS custom property in file)
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
-  - [ ]* 7.2 Write property test for CSS token extraction
+  - [~] 7.2 Write property test for CSS token extraction
     - **Property 12: CSS token extraction completeness**
     - **Validates: Requirements 11.1, 11.2**
     - Create `src/sync/__tests__/token-syncer.test.ts`
@@ -152,7 +153,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Update `lastSyncedAt` and `lastSyncDirection` in Component_Map on success
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7_
 
-  - [ ]* 9.2 Write unit tests for Code-to-Figma Syncer
+  - [~] 9.2 Write unit tests for Code-to-Figma Syncer
     - Test `use_figma` script generation for adding a new variant
     - Test chunking when operations exceed 15KB estimate
     - Test error handling when `use_figma` call fails (Component_Map not updated)
@@ -168,7 +169,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Write modified file back using ts-morph `saveSync()`
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
 
-  - [ ]* 10.2 Write unit tests for Figma-to-Code Syncer
+  - [~] 10.2 Write unit tests for Figma-to-Code Syncer
     - Test Tailwind class replacement for color token changes
     - Test cva variant object modification for new variant addition
     - Test file write failure handling (original file unchanged)
@@ -183,18 +184,18 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Implement merge strategy: parse existing story file for exported story names, only add stories for new variants, preserve manually written stories
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
-  - [ ]* 11.2 Write property test for story generation variant coverage
+  - [~] 11.2 Write property test for story generation variant coverage
     - **Property 10: Story generation covers all variants**
     - **Validates: Requirements 7.2, 7.3**
     - Create `src/sync/__tests__/story-generator.test.ts`
     - Generate random manifests with variants, verify output contains Meta with autodocs tag, one story per variant option, and play functions
 
-  - [ ]* 11.3 Write property test for story merge preservation
+  - [~] 11.3 Write property test for story merge preservation
     - **Property 11: Story merge preserves manual stories**
     - **Validates: Requirements 7.4**
     - Generate existing story files with manual stories, merge with new auto-generated stories, verify manual stories are preserved
 
-  - [ ]* 11.4 Write unit tests for Story Generator
+  - [~] 11.4 Write unit tests for Story Generator
     - Test template-based generation output structure for Button component
     - Test merge with existing `src/stories/atoms/Button.stories.tsx`
     - Test Storybook MCP fallback when MCP is unavailable
@@ -216,7 +217,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Support log types: SYNC, STORY, DRIFT, TOKEN, INIT
     - _Requirements: 12.6_
 
-  - [ ]* 13.3 Write unit tests for Component Map operations
+  - [~] 13.3 Write unit tests for Component Map operations
     - Test `loadComponentMap` with existing and missing file
     - Test `initComponentMap` scanning component directories
     - Test `updateEntry` modifying lastSyncedAt and lastSyncDirection
@@ -237,7 +238,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Print completion summary: components synced, directions, stories generated, errors
     - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5_
 
-  - [ ]* 14.3 Write unit tests for CLI argument parsing
+  - [~] 14.3 Write unit tests for CLI argument parsing
     - Test each subcommand routes correctly
     - Test `--json`, `--direction`, `--dry-run` flag parsing
     - Test error output for unknown subcommands
@@ -259,7 +260,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Implement error recovery: log failures, skip failed components, continue remaining, don't update Component_Map for failed syncs
     - _Requirements: 5.7, 12.1, 12.2, 12.3, 12.4, 12.5_
 
-  - [ ]* 16.2 Write integration tests for Sync Engine
+  - [~] 16.2 Write integration tests for Sync Engine
     - Test full pipeline with mock adapters (MockFigmaMCPAdapter, MockFileSystem)
     - Test error recovery: MCP failure skips component, file write failure leaves original unchanged
     - Test Storybook MCP fallback to template generation
@@ -277,3 +278,4 @@ This plan implements bidirectional synchronization tooling between the React cod
 - Unit tests validate specific examples, edge cases, and error handling
 - All Figma operations go through the MCP adapter — no direct REST API calls
 - The implementation language is TypeScript throughout, matching the existing codebase
+- Existing tests: 5 test files with 92 passing tests (setup, color-utils, manifest-extractor, value-mapping, figma-mcp)

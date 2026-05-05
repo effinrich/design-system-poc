@@ -22,12 +22,17 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const WithImage: Story = {
+  args: {
+    size: "sm"
+  },
+
   render: () => (
     <Avatar>
       <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   ),
+
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const avatar = canvas.getByAltText('@shadcn')
@@ -120,3 +125,66 @@ export const AllSizes: Story = {
     await expect(canvas.getByText('LG')).toBeVisible()
   }
 }
+
+export const LgAvatar: Story = {
+  args: {
+    size: "lg"
+  },
+
+  render: () => (<Avatar>
+    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+    <AvatarFallback>CN</AvatarFallback>
+  </Avatar>),
+
+  play: async (
+    {
+      canvasElement
+    }
+  ) => {
+    const canvas = within(canvasElement);
+    const avatar = canvas.getByAltText("@shadcn");
+    await expect(avatar).toBeInTheDocument();
+  }
+};
+
+export const SmAvatar: Story = {
+  args: {
+    size: "sm"
+  },
+
+  render: () => (<Avatar>
+    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+    <AvatarFallback>CN</AvatarFallback>
+  </Avatar>),
+
+  play: async (
+    {
+      canvasElement
+    }
+  ) => {
+    const canvas = within(canvasElement);
+    const avatar = canvas.getByAltText("@shadcn");
+    await expect(avatar).toBeInTheDocument();
+  }
+};
+
+export const DefaultAvatar: Story = {
+  args: {
+    size: "default"
+  },
+
+  render: () => (<Avatar>
+    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+    <AvatarFallback>CN</AvatarFallback>
+  </Avatar>),
+
+  play: async (
+    {
+      canvasElement
+    }
+  ) => {
+    const canvas = within(canvasElement);
+    const avatar = canvas.getByAltText("@shadcn");
+    await expect(avatar).toBeInTheDocument();
+  }
+};

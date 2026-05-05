@@ -173,6 +173,96 @@ IMPORTANT: Use Tailwind utility classes for styling. Do not use inline styles un
 - **Addons**: `@storybook/addon-docs`, `@storybook/addon-a11y`
 - **Tags**: All stories use `tags: ["autodocs"]` for automatic documentation
 
+## Component Architecture Patterns
+
+### shadcn/ui Primitives (src/components/ui/)
+
+All UI primitives follow these conventions:
+
+- **Base UI integration**: Components wrap `@base-ui/react` primitives (e.g., `Button` wraps `@base-ui/react/button`)
+- **Variant system**: Use `class-variance-authority` (cva) to define variant maps with `variants` and `defaultVariants`
+- **className merging**: Every component accepts a `className` prop and merges it using `cn()` from `@/lib/utils`
+- **data-slot attributes**: Every component root element includes `data-slot="component-name"` for styling hooks and testing selectors
+- **Named exports**: Components use named exports, not default exports (e.g., `export { Button, buttonVariants }`)
+- **Sub-components**: Compound components (Card, Table, Tabs) export each sub-component separately from the same file
+
+### Dashboard Components (src/components/dashboard/)
+
+Composed components that combine UI primitives:
+
+- Import primitives from `@/components/ui/` — never recreate them
+- Define a typed props interface (e.g., `StatCardProps`) exported alongside the component
+- Use Lucide icons imported individually
+- Follow the Atoms → Molecules → Pages hierarchy
+
+### Creating New Components
+
+When adding a new component from Figma:
+
+1. Check if an existing UI primitive or dashboard component already covers the need
+2. For new primitives: add to `src/components/ui/` following the cva + data-slot pattern
+3. For new composed components: add to `src/components/dashboard/` importing from `@/components/ui/`
+4. IMPORTANT: Always create a matching Storybook story in the appropriate `src/stories/` subdirectory
+
+## Import Conventions
+
+- **Path aliases**: Use `@/` prefix for all project imports (maps to `src/`)
+  - `@/components/ui/button` — UI primitives
+  - `@/components/dashboard/StatCard` — dashboard components
+  - `@/lib/utils` — utility functions
+  - `@/hooks/use-mobile` — custom hooks
+- **Import order**: React/third-party → project imports (`@/`) → types
+- **Icon imports**: Individual named imports from `lucide-react` (e.g., `import { Search, ChevronRight } from "lucide-react"`)
+- IMPORTANT: Never use relative imports that go beyond the parent directory. Use `@/` aliases instead.
+
+## Testing & Quality
+
+### Storybook Interaction Tests
+
+Every story must include a `play` function for interaction testing:
+
+```tsx
+play: async ({ canvasElement, args }) => {
+  const canvas = within(canvasElement)
+  const element = canvas.getByRole('button', { name: 'Label' })
+  await expect(element).toBeVisible()
+  await userEvent.click(element)
+  await expect(args.onClick).toHaveBeenCalledOnce()
+}
+```
+
+- Use `storybook/test` imports: `expect`, `fn`, `userEvent`, `within`
+- Query by role/label (accessible queries), not by class or test-id
+- Test visibility, interaction, and callback invocation
+- For composed components, verify all child elements render
+
+### Unit Tests
+
+- **Runner**: Vitest with `vitest --run` (no watch mode)
+- **Property-based testing**: `fast-check` via `@fast-check/vitest` available for invariant testing
+- **Test location**: `src/sync/__tests__/` for sync module tests
+
+### Story File Conventions
+
+| Atomic Level | Story Location | Meta Title Pattern |
+|-------------|----------------|-------------------|
+| Atoms | `src/stories/atoms/` | `'Atoms/ComponentName'` |
+| Molecules | `src/stories/molecules/` | `'Molecules/ComponentName'` |
+| Pages | `src/stories/pages/` | `'Pages/ComponentName'` |
+
+All story files must include:
+- `tags: ['autodocs']` for automatic documentation
+- `parameters: { layout: 'centered' }` (or `'fullscreen'` for pages)
+- `argTypes` with controls for all variant props
+- At minimum: one story per variant + an `AllVariants` story showing all options together
+
+## Dark Mode
+
+- Toggled via `.dark` class on an ancestor element
+- All color tokens have light and dark values defined in `src/index.css`
+- IMPORTANT: When implementing from Figma, ensure components work in both light and dark modes
+- Use semantic token names (e.g., `bg-card`, `text-muted-foreground`) — they automatically adapt to the active mode
+
 ## Figma File Reference
 
 - **File key**: `uDSGcEd2obHYrbp2DfcNxO`
