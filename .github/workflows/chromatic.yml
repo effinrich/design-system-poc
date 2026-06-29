@@ -15,7 +15,7 @@ on:
       - "package-lock.json"
       - "bun.lockb"
       - "pnpm-lock.yaml"
-      - "yarn.
+      - "yarn.lock"
       - ".github/workflows/chromatic.yml"
 
 jobs:
