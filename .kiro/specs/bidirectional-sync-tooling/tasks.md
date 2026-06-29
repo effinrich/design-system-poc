@@ -19,7 +19,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Create `src/sync/constants.ts` with `SPACING_MAP`, `RADIUS_MAP`, and `TOKEN_PATTERN` regex
     - _Requirements: 1.3, 2.1, 3.1, 4.2_
 
-  - [-] 1.3 Write property tests for data model serialization round-trips
+  - [x] 1.3 Write property tests for data model serialization round-trips
     - **Property 1: ComponentManifest serialization round-trip**
     - **Validates: Requirements 2.5, 2.6, 2.7**
     - **Property 2: FigmaSnapshot serialization round-trip**
@@ -39,7 +39,7 @@ This plan implements bidirectional synchronization tooling between the React cod
     - Detect sub-components exported from the same file
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-  - [~] 2.2 Write property test for Manifest Extractor
+  - [-] 2.2 Write property test for Manifest Extractor
     - **Property 4: Manifest extraction captures all component metadata**
     - **Validates: Requirements 2.1, 2.2, 2.3**
     - Create `src/sync/__tests__/manifest-extractor.test.ts`

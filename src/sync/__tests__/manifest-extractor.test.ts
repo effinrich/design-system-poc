@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, afterEach } from 'vitest'
+import fc from 'fast-check'
+import fs from 'fs'
+import os from 'os'
 import { extractManifest } from '../manifest-extractor'
+import { SPACING_MAP, RADIUS_MAP } from '../constants'
 import path from 'path'
 
 // Resolve paths relative to project root
@@ -228,5 +232,263 @@ describe('ManifestExtractor', () => {
       )
       expect(manifest.subComponents).toEqual([])
     })
+  })
+})
+
+// Feature: bidirectional-sync-tooling, Property 4: Manifest extraction captures all component metadata
+describe('Property 4: Manifest extraction captures all component metadata', () => {
+  // **Validates: Requirements 2.1, 2.2, 2.3**
+
+  const tmpFiles: string[] = []
+
+  afterEach(() => {
+    for (const f of tmpFiles) {
+      try {
+        fs.unlinkSync(f)
+      } catch {
+        // ignore
+      }
+    }
+    tmpFiles.length = 0
+  })
+
+  // Arbitrary for valid variant names (lowercase identifiers)
+  const arbVariantName = fc
+    .string({
+      minLength: 1,
+      maxLength: 12,
+      unit: fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz'.split(''))
+    })
+    .filter(s => /^[a-z][a-z]*$/.test(s))
+
+  // Arbitrary for valid variant option names (lowercase identifiers, may include hyphens)
+  const arbOptionName = fc
+    .string({
+      minLength: 1,
+      maxLength: 10,
+      unit: fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz'.split(''))
+    })
+    .filter(s => /^[a-z][a-z]*$/.test(s))
+
+  // Arbitrary for design token names that pass the isLikelyToken filter
+  const arbTokenName = fc.constantFrom(
+    'primary',
+    'secondary',
+    'muted-foreground',
+    'destructive',
+    'accent',
+    'background',
+    'card-foreground',
+    'popover',
+    'input',
+    'ring'
+  )
+
+  // Arbitrary for token utility prefixes
+  const arbTokenPrefix = fc.constantFrom(
+    'bg',
+    'text',
+    'border',
+    'ring',
+    'fill',
+    'stroke'
+  )
+
+  // Arbitrary for spacing classes (from SPACING_MAP keys)
+  const spacingKeys = Object.keys(SPACING_MAP)
+  const arbSpacingClass = fc.constantFrom(...spacingKeys)
+
+  // Arbitrary for radius classes (from RADIUS_MAP keys)
+  const radiusKeys = Object.keys(RADIUS_MAP)
+  const arbRadiusClass = fc.constantFrom(...radiusKeys)
+
+  // Generate a synthetic component source with cva() call
+  function buildSyntheticSource(
+    componentName: string,
+    variants: Record<string, string[]>,
+    tokenClasses: string[],
+    spacingClasses: string[],
+    radiusClasses: string[]
+  ): string {
+    // Build the variants object literal
+    const variantEntries = Object.entries(variants)
+      .map(([varName, options]) => {
+        const optionEntries = options
+          .map(opt => `      ${opt}: "some-class-${opt}"`)
+          .join(',\n')
+        return `    ${varName}: {\n${optionEntries}\n    }`
+      })
+      .join(',\n')
+
+    // Build class strings that contain token references, spacing, and radius
+    const allClasses = [
+      ...tokenClasses,
+      ...spacingClasses,
+      ...radiusClasses
+    ].join(' ')
+
+    return `
+import { cva } from "class-variance-authority"
+
+const ${componentName.toLowerCase()}Variants = cva("${allClasses}", {
+  variants: {
+${variantEntries}
+  },
+  defaultVariants: {}
+})
+
+export function ${componentName}() {
+  return null
+}
+`
+  }
+
+  it('extracts all variant names and options from synthetic cva() calls', () => {
+    fc.assert(
+      fc.property(
+        // Generate 1-4 unique variant names, each with 1-5 unique options
+        fc
+          .uniqueArray(arbVariantName, { minLength: 1, maxLength: 4 })
+          .chain(variantNames =>
+            fc.tuple(
+              fc.constant(variantNames),
+              fc.tuple(
+                ...variantNames.map(() =>
+                  fc.uniqueArray(arbOptionName, { minLength: 1, maxLength: 5 })
+                )
+              )
+            )
+          ),
+        ([variantNames, optionArrays]) => {
+          const variants: Record<string, string[]> = {}
+          variantNames.forEach((name, i) => {
+            variants[name] = optionArrays[i]
+          })
+
+          const componentName = 'TestComp'
+          const source = buildSyntheticSource(
+            componentName,
+            variants,
+            [],
+            [],
+            []
+          )
+
+          // Write to temp file
+          const tmpDir = os.tmpdir()
+          const tmpFile = path.join(
+            tmpDir,
+            `test-comp-${Date.now()}-${Math.random().toString(36).slice(2)}.tsx`
+          )
+          fs.writeFileSync(tmpFile, source)
+          tmpFiles.push(tmpFile)
+
+          const manifest = extractManifest(tmpFile)
+
+          // (a) Every variant name appears in manifest.variants
+          for (const varName of variantNames) {
+            expect(manifest.variants).toHaveProperty(varName)
+          }
+
+          // (b) Every option value for each variant appears in the corresponding array
+          for (const [varName, options] of Object.entries(variants)) {
+            for (const opt of options) {
+              expect(manifest.variants[varName]).toContain(opt)
+            }
+          }
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+
+  it('extracts all design token references from synthetic Tailwind classes', () => {
+    fc.assert(
+      fc.property(
+        // Generate 1-5 unique token class strings (prefix-tokenName)
+        fc.uniqueArray(
+          fc.tuple(arbTokenPrefix, arbTokenName).map(([prefix, token]) => ({
+            className: `${prefix}-${token}`,
+            tokenName: token
+          })),
+          {
+            minLength: 1,
+            maxLength: 5,
+            comparator: (a, b) => a.className === b.className
+          }
+        ),
+        tokenEntries => {
+          const tokenClasses = tokenEntries.map(e => e.className)
+          const expectedTokens = [
+            ...new Set(tokenEntries.map(e => e.tokenName))
+          ]
+
+          const componentName = 'TokenComp'
+          const source = buildSyntheticSource(
+            componentName,
+            { style: ['normal'] },
+            tokenClasses,
+            [],
+            []
+          )
+
+          const tmpDir = os.tmpdir()
+          const tmpFile = path.join(
+            tmpDir,
+            `token-comp-${Date.now()}-${Math.random().toString(36).slice(2)}.tsx`
+          )
+          fs.writeFileSync(tmpFile, source)
+          tmpFiles.push(tmpFile)
+
+          const manifest = extractManifest(tmpFile)
+
+          // (c) Every design token referenced appears in manifest.tokenReferences
+          for (const token of expectedTokens) {
+            expect(manifest.tokenReferences).toContain(token)
+          }
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+
+  it('extracts all spacing and radius classes from synthetic source', () => {
+    fc.assert(
+      fc.property(
+        fc.uniqueArray(arbSpacingClass, { minLength: 1, maxLength: 5 }),
+        fc.uniqueArray(arbRadiusClass, { minLength: 1, maxLength: 3 }),
+        (spacingClasses, radiusClasses) => {
+          const componentName = 'LayoutComp'
+          const source = buildSyntheticSource(
+            componentName,
+            { mode: ['default'] },
+            [],
+            spacingClasses,
+            radiusClasses
+          )
+
+          const tmpDir = os.tmpdir()
+          const tmpFile = path.join(
+            tmpDir,
+            `layout-comp-${Date.now()}-${Math.random().toString(36).slice(2)}.tsx`
+          )
+          fs.writeFileSync(tmpFile, source)
+          tmpFiles.push(tmpFile)
+
+          const manifest = extractManifest(tmpFile)
+
+          // (d) Every spacing class appears in manifest.spacingClasses
+          for (const cls of spacingClasses) {
+            expect(manifest.spacingClasses).toContain(cls)
+          }
+
+          // (d) Every radius class appears in manifest.radiusClasses
+          for (const cls of radiusClasses) {
+            expect(manifest.radiusClasses).toContain(cls)
+          }
+        }
+      ),
+      { numRuns: 100 }
+    )
   })
 })
