@@ -1,0 +1,9 @@
+version: 2
+# Dormant/reference repo: silence version-update noise (limit 0).
+# Security updates are unaffected and still open automatically.
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
